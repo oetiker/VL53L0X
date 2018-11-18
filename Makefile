@@ -1,14 +1,19 @@
 CFLAGS=-c -Wall -O2
 
-all: libtof.a
+all: tofdemo gettof
 
 libtof.a: tof.o
-	ar -rc libtof.a tof.o ;\
-	sudo cp libtof.a /usr/local/lib ;\
-	sudo cp tof.h /usr/local/include
+	$(AR) rcs $@ $^
 
-tof.o: tof.c
-	$(CC) $(CFLAGS) tof.c
+gettof: gettof.o libtof.a
+	$(CC) $(CFLAGS) $^ -o $@ -L. -ltof
+
+tofdemo: tofdemo.o libtof.a
+	$(CC) $(CFLAGS) $^ -o $@ -L. -ltof
+
+%.o : %.c
+	$(CC) -c $(CFLAGS) $< -o $@
+
 
 clean:
-	rm *.o libtof.a
+	-rm *.o libtof.a tofdemo gettof
